@@ -1,20 +1,15 @@
 "use client";
-import React, { useState, useId } from "react";
+import React, { useState, useId, useEffect } from "react";
 import axios from "axios";
-import { WebClient, LogLevel } from "@slack/web-api";
+// import { WebClient, LogLevel } from "@slack/web-api";
 import ollama from "ollama";
+import { useRouter } from "next/navigation";
 
-const client = new WebClient(
-  "xoxb-6560144487207-6596052596289-9ZbMwAiLIq3J8xJotkkDxpWH",
-  {
-    // LogLevel can be imported and used to make debugging simpler
-    logLevel: LogLevel.DEBUG,
-  }
-);
 
 function Homepage() {
-  const [uploadedImage, setUploadedImage] = useState();
-  const [aiCaptionText, setAiCaptionText] = useState();
+  const router = useRouter();
+  const [uploadedImage, setUploadedImage] = useState("");
+  const [aiCaptionText, setAiCaptionText] = useState("");
 
   const [file, setFile] = useState();
   const [loader, setLoader] = useState(false);
@@ -37,9 +32,6 @@ function Homepage() {
         stream: false,
       });
 
-      // const response = await ollama.chat(requestBody);
-      // console.log(response.done );
-
       if (response.done) {
         setLoader(false);
         setAiCaptionText(response.response);
@@ -54,11 +46,14 @@ function Homepage() {
 
   const submitToslack = async () => {
     if (uploadedImage && aiCaptionText) {
+      // console.log(uploadedImage);
+      // console.log(aiCaptionText);
+
       setLoader(true);
       const form = new FormData();
       form.append(
         "token",
-        "xoxb-6560144487207-6596052596289-9ZbMwAiLIq3J8xJotkkDxpWH"
+        "xoxb-6560144487207-6596052596289-GjpjqbXy8pruoCym3MUH4dmC"
       );
       form.append("channels", "C06HKE5KX40");
       form.append("file", uploadedImage);
@@ -70,13 +65,15 @@ function Homepage() {
           form
         );
 
-        if(res.ok){
+        // console.log(res);
+
+        if (res.data.ok) {
           setLoader(false);
+          alert("Your message posted successfully..");
         } else {
           setLoader(false);
           alert(" something went wrong...");
         }
-        
       } catch (err) {
         throw new Error(err);
       }
@@ -105,6 +102,16 @@ function Homepage() {
     if (filedfd) {
       reader.readAsDataURL(filedfd);
     }
+  };
+
+  const reset = () => {
+    setAiCaptionText("");
+    setBase64String("");
+    setFile("");
+    setUploadedImage("");
+    setLoader(false);
+    document.getElementById("formFileLg").value = "";
+    router.refresh();
   };
 
   return (
@@ -141,15 +148,24 @@ function Homepage() {
                 >
                   Generate image caption
                 </button>
+                <br />
+                <br />
+                <button
+                  type="button"
+                  className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+                  onClick={reset}
+                >
+                  Reset
+                </button>
               </div>
             </form>
           </div>
           <div className="right_wrapper">
             <div className="rounded-lg shadow bg-gray-800 border-gray-700 w-full min-h-[580px] p-8">
-              <span class="relative flex justify-center">
-                <div class="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-transparent bg-gradient-to-r from-transparent via-gray-500 to-transparent opacity-75"></div>
+              <span className="relative flex justify-center">
+                <div className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-transparent bg-gradient-to-r from-transparent via-gray-500 to-transparent opacity-75"></div>
 
-                <span class="relative text-white bg-gray-800 px-6">
+                <span className="relative text-white bg-gray-800 px-6">
                   Preview Section
                 </span>
               </span>
@@ -159,11 +175,13 @@ function Homepage() {
               <br />
               {aiCaptionText && (
                 <textarea
-                  class="mt-2 w-full rounded-lg align-top shadow-sm sm:text-sm border-gray-700 bg-gray-800 text-white"
+                  className="mt-2 w-full rounded-lg align-top shadow-sm sm:text-sm border-gray-700 bg-gray-800 text-white"
                   rows="10"
                   id={postTextAreaId}
                   cols={40}
                   placeholder="Enter any additional order notes..."
+                  value={aiCaptionText}
+                  onChange={(e) => setAiCaptionText(e.target.value)}
                 >
                   {aiCaptionText}
                 </textarea>
@@ -176,6 +194,7 @@ function Homepage() {
           type="button"
           className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
           onClick={submitToslack}
+          disabled={aiCaptionText ? "" : "true"}
         >
           Post image and caption to Slack channel
         </button>
