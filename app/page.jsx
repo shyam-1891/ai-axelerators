@@ -5,15 +5,58 @@ import axios from "axios";
 import ollama from "ollama";
 import { useRouter } from "next/navigation";
 
-
 function Homepage() {
   const router = useRouter();
   const [uploadedImage, setUploadedImage] = useState("");
   const [aiCaptionText, setAiCaptionText] = useState("");
+  const [channels, setChannels] = useState([]);
 
   const [file, setFile] = useState();
   const [loader, setLoader] = useState(false);
   const [base64String, setBase64String] = useState("");
+  const [selectedOption, setSelectedOption] = useState("");
+
+  const handleSelectChange = (event) => {
+    setSelectedOption(event.target.value);
+  };
+
+  useEffect(() => {
+    const fetchChannels = async () => {
+      try {
+        setLoader(true);
+        let config = {
+          method: "get",
+          maxBodyLength: Infinity,
+          url: "http://localhost:3000/api/api/conversations.list",
+          headers: {
+            "Access-Control-Allow-Headers": "*",
+            "Content-type": "application/json",
+            Authorization:
+              "Bearer xoxb-6560144487207-6596052596289-TK73Pk1JDhwzphEQmAJAzMve",
+          },
+        };
+
+        axios
+          .request(config)
+          .then((response) => {
+            // console.log(JSON.stringify(response.data));
+            if (response.data.ok) {
+              setChannels(response.data.channels);
+              setLoader(false);
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } catch (error) {
+        setLoader(false);
+      } finally {
+        setLoader(false);
+      }
+    };
+
+    fetchChannels();
+  }, []);
 
   async function submitForm(e) {
     e.preventDefault();
@@ -27,7 +70,10 @@ function Homepage() {
 
       const response = await ollama.generate({
         model: "llava",
-        prompt: "describe this image:",
+        // prompt: "describe this image:",
+        // prompt: "define this image:",
+        prompt:
+          "Generate a good creative caption for this image in brief use emojis or hastags if needed",
         images: [test[1]],
         stream: false,
       });
@@ -45,17 +91,17 @@ function Homepage() {
   }
 
   const submitToslack = async () => {
-    if (uploadedImage && aiCaptionText) {
+    if (uploadedImage && aiCaptionText && selectedOption != "") {
       // console.log(uploadedImage);
-      // console.log(aiCaptionText);
+      // console.log(selectedOption);
 
       setLoader(true);
       const form = new FormData();
       form.append(
         "token",
-        "xoxb-6560144487207-6596052596289-GjpjqbXy8pruoCym3MUH4dmC"
+        "xoxb-6560144487207-6596052596289-TK73Pk1JDhwzphEQmAJAzMve"
       );
-      form.append("channels", "C06HKE5KX40");
+      form.append("channels", selectedOption);
       form.append("file", uploadedImage);
       form.append("filetype", "auto");
       form.append("initial_comment", aiCaptionText);
@@ -79,7 +125,7 @@ function Homepage() {
       }
     } else {
       setLoader(false);
-      alert("Please add Image..");
+      alert("Please add Image or Select any Slack channel..");
     }
   };
 
@@ -110,6 +156,7 @@ function Homepage() {
     setFile("");
     setUploadedImage("");
     setLoader(false);
+    setSelectedOption("");
     document.getElementById("formFileLg").value = "";
     router.refresh();
   };
@@ -190,11 +237,27 @@ function Homepage() {
           </div>
         </div>
 
+        {channels.length > 0 && (
+          <select
+            className=" border   text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 max-w-fit my-5 mx-auto"
+            value={selectedOption}
+            onChange={handleSelectChange}
+            disabled={aiCaptionText ? "" : "disabled"}
+          >
+            {/* Default option */}
+            <option value="">Select an option</option>
+            {channels.map((channel) => (
+              <option value={channel.id} key={channel.id}>
+                {channel.name}
+              </option>
+            ))}
+          </select>
+        )}
         <button
           type="button"
           className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
           onClick={submitToslack}
-          disabled={aiCaptionText ? "" : "true"}
+          disabled={aiCaptionText ? "" : "disabled"}
         >
           Post image and caption to Slack channel
         </button>
