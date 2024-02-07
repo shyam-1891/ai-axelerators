@@ -31,8 +31,7 @@ function Homepage() {
           headers: {
             "Access-Control-Allow-Headers": "*",
             "Content-type": "application/json",
-            Authorization:
-              "Bearer xoxb-6560144487207-6596052596289-TK73Pk1JDhwzphEQmAJAzMve",
+            Authorization: `Bearer ${process.env.Slack_token}`,
           },
         };
 
@@ -99,7 +98,7 @@ function Homepage() {
       const form = new FormData();
       form.append(
         "token",
-        "xoxb-6560144487207-6596052596289-TK73Pk1JDhwzphEQmAJAzMve"
+        process.env.Slack_token
       );
       form.append("channels", selectedOption);
       form.append("file", uploadedImage);
