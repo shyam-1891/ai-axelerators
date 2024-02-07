@@ -21,6 +21,7 @@ function Homepage() {
   };
 
   useEffect(() => {
+    // console.log(process.env.Slack_token);
     const fetchChannels = async () => {
       try {
         setLoader(true);

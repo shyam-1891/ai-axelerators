@@ -18,9 +18,9 @@ const nextConfig = {
     ]
   },
 
-  env: {
-    Slack_token: 'xoxb-6560144487207-6596052596289-EjasJgqvxRQvfgGkCmYBl3lV',
-  },
+  // env: {
+  //   Slack_token: 'xoxb-6560144487207-6596052596289-EjasJgqvxRQvfgGkCmYBl3lV',
+  // },
 };
 
 export default nextConfig;
