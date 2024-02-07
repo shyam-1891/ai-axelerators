@@ -21,7 +21,7 @@ function Homepage() {
   };
 
   useEffect(() => {
-    // console.log(process.env.Slack_token);
+    // console.log(process.env.NEXT_PUBLIC_Slack_Token);
     const fetchChannels = async () => {
       try {
         setLoader(true);
@@ -32,7 +32,7 @@ function Homepage() {
           headers: {
             "Access-Control-Allow-Headers": "*",
             "Content-type": "application/json",
-            Authorization: `Bearer ${process.env.Slack_token}`,
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_Slack_Token}`,
           },
         };
 
@@ -99,7 +99,7 @@ function Homepage() {
       const form = new FormData();
       form.append(
         "token",
-        process.env.Slack_token
+        process.env.NEXT_PUBLIC_Slack_Token
       );
       form.append("channels", selectedOption);
       form.append("file", uploadedImage);
