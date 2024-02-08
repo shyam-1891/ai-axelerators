@@ -73,7 +73,9 @@ function Homepage() {
         // prompt: "describe this image:",
         // prompt: "define this image:",
         prompt:
-          "Generate a good creative caption for this image in brief use emojis or hastags if needed",
+          "Generate a good creative instagram caption for this image in brief use emojis or hastags if needed.",
+        // prompt: "Generate a good creative instagram caption",
+        // prompt: "Generate funny caption in one line only with emojis or hastags.",
         images: [test[1]],
         stream: false,
       });
@@ -97,10 +99,7 @@ function Homepage() {
 
       setLoader(true);
       const form = new FormData();
-      form.append(
-        "token",
-        process.env.NEXT_PUBLIC_Slack_Token
-      );
+      form.append("token", process.env.NEXT_PUBLIC_Slack_Token);
       form.append("channels", selectedOption);
       form.append("file", uploadedImage);
       form.append("filetype", "auto");
@@ -132,21 +131,23 @@ function Homepage() {
   const postTextAreaId = useId();
 
   const handleChange = (e) => {
-    setUploadedImage(e.target.files[0]);
-    setFile(URL.createObjectURL(e.target.files[0]));
+    if (e.target.files[0]) {
+      setUploadedImage(e.target.files[0]);
+      setFile(URL.createObjectURL(e.target.files[0]));
+      setAiCaptionText("");
+      const filedfd = e.target.files[0];
 
-    const filedfd = e.target.files[0];
+      const reader = new FileReader();
 
-    const reader = new FileReader();
+      reader.onloadend = () => {
+        // Convert image to Base64 string
+        const base64 = reader.result;
+        setBase64String(base64);
+      };
 
-    reader.onloadend = () => {
-      // Convert image to Base64 string
-      const base64 = reader.result;
-      setBase64String(base64);
-    };
-
-    if (filedfd) {
-      reader.readAsDataURL(filedfd);
+      if (filedfd) {
+        reader.readAsDataURL(filedfd);
+      }
     }
   };
 
@@ -164,8 +165,10 @@ function Homepage() {
   return (
     <>
       <div className="main_wrapper">
+        {/* {logo} */}
+
         <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight  md:text-5xl lg:text-5xl text-white max-w-3xl text-center mx-auto">
-          Upload your image to generate Ai based caption...
+          Generate Ai based captions...
         </h1>
         <div className="content__Wrapper">
           <div className="left_wrapper border-gray-300 border-dashed rounded-lg relative">
@@ -245,7 +248,7 @@ function Homepage() {
             disabled={aiCaptionText ? "" : "disabled"}
           >
             {/* Default option */}
-            <option value="">Select an option</option>
+            <option value="">Select slack channel..</option>
             {channels.map((channel) => (
               <option value={channel.id} key={channel.id}>
                 {channel.name}
