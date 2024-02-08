@@ -88,7 +88,7 @@ function Homepage() {
         alert("There was an error.  Please try again later.");
       }
     } else {
-      alert("Please upload other image...");
+      alert("Please Upload An Image.");
     }
   }
 
@@ -114,17 +114,17 @@ function Homepage() {
 
         if (res.data.ok) {
           setLoader(false);
-          alert("Your message posted successfully..");
+          alert("Your message is posted successfully..");
         } else {
           setLoader(false);
-          alert(" something went wrong...");
+          alert("Something went wrong...");
         }
       } catch (err) {
         throw new Error(err);
       }
     } else {
       setLoader(false);
-      alert("Please add Image or Select any Slack channel..");
+      alert("Select Any Slack Channel To Share.");
     }
   };
 
@@ -164,11 +164,13 @@ function Homepage() {
 
   return (
     <>
-      <div className="main_wrapper">
+      <div className="main_wrapper font-mono capitalize">
         {/* {logo} */}
-
-        <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight  md:text-5xl lg:text-5xl text-white max-w-3xl text-center mx-auto">
-          Generate Ai based captions...
+        <div className="logo_wrapper">
+          <img src="https://www.axelerant.com/hubfs/raw_assets/public/Axelerant_theme_2022/images/Axelerant-Logo-color.svg" />
+        </div>
+        <h1 className="mb-4 font-mono text-4xl font-extrabold leading-none tracking-tight  md:text-4xl lg:text-4xl text-white text-center mx-auto mt-1 uppercase">
+          Generate Ai based captions
         </h1>
         <div className="content__Wrapper">
           <div className="left_wrapper border-gray-300 border-dashed rounded-lg relative">
@@ -181,7 +183,7 @@ function Homepage() {
                   htmlFor="formFileLg"
                   className="mb-2 inline-block text-neutral-200"
                 >
-                  Upload the file..
+                  File upload
                 </label>
                 <input
                   className="relative m-0 block w-full min-w-0 flex-auto cursor-pointer rounded border border-solid border-neutral-300 bg-clip-padding px-3 py-[0.32rem] font-normal leading-[2.15] text-neutral-700 transition duration-300 ease-in-out file:-mx-3 file:-my-[0.32rem] file:cursor-pointer file:overflow-hidden file:rounded-none file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3 file:py-[0.32rem] file:text-neutral-700 file:transition file:duration-150 file:ease-in-out file:[border-inline-end-width:1px] file:[margin-inline-end:0.75rem] hover:file:bg-neutral-200 focus:border-primary focus:text-neutral-700 focus:shadow-te-primary focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:file:bg-neutral-700 dark:file:text-neutral-100 dark:focus:border-primary"
@@ -194,7 +196,7 @@ function Homepage() {
                 <br></br>
                 <button
                   type="submit"
-                  className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+                  className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 capitalize"
                 >
                   Generate image caption
                 </button>
@@ -202,7 +204,7 @@ function Homepage() {
                 <br />
                 <button
                   type="button"
-                  className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+                  className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 capitalize"
                   onClick={reset}
                 >
                   Reset
@@ -221,12 +223,12 @@ function Homepage() {
               </span>
               <br />
 
-              {file && <img src={file} />}
+              {file && <img className="previewimg" src={file} />}
               <br />
               {aiCaptionText && (
                 <textarea
-                  className="mt-2 w-full rounded-lg align-top shadow-sm sm:text-sm border-gray-700 bg-gray-800 text-white"
-                  rows="10"
+                  className="mt-2 w-full rounded-lg align-top shadow-sm sm:text-sm border-gray-700 bg-gray-800 text-white p-2 border divide-solid"
+                  rows="5"
                   id={postTextAreaId}
                   cols={40}
                   placeholder="Enter any additional order notes..."
@@ -248,7 +250,7 @@ function Homepage() {
             disabled={aiCaptionText ? "" : "disabled"}
           >
             {/* Default option */}
-            <option value="">Select slack channel..</option>
+            <option value="">-- Select Slack Channel --</option>
             {channels.map((channel) => (
               <option value={channel.id} key={channel.id}>
                 {channel.name}
@@ -258,11 +260,11 @@ function Homepage() {
         )}
         <button
           type="button"
-          className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+          className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 capitalize"
           onClick={submitToslack}
           disabled={aiCaptionText ? "" : "disabled"}
         >
-          Post image and caption to Slack channel
+          Let's Share It to a Slack channel
         </button>
 
         {/* Loader.... */}
