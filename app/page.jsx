@@ -4,6 +4,9 @@ import axios from "axios";
 // import { WebClient, LogLevel } from "@slack/web-api";
 import ollama from "ollama";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+// import logo from '../app/logo.png';
+import darklogo from "../public/darklogo.png";
 
 function Homepage() {
   const router = useRouter();
@@ -15,9 +18,14 @@ function Homepage() {
   const [loader, setLoader] = useState(false);
   const [base64String, setBase64String] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
+  const [prompt, setPrompt] = useState("a");
 
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
+  };
+
+  const handleSelectpromptChange = (event) => {
+    setPrompt(event.target.value);
   };
 
   useEffect(() => {
@@ -62,20 +70,31 @@ function Homepage() {
     e.preventDefault();
 
     // console.log(base64String);
-    if (uploadedImage && base64String) {
+    if (uploadedImage && base64String && prompt) {
       // Set loader true
       setLoader(true);
 
       const test = base64String.split("base64,");
 
+      // const promptVal = prompt;
+      let promptVal =
+        "Generate a good creative instagram caption for this image in brief use emojis or hastags if needed.";
+      if (prompt == "a") {
+        promptVal =
+          "Generate a good creative caption for this image in brief use emojis or hastags if needed.";
+      } else if (prompt == "b") {
+        promptVal = "describe this image in brief.";
+      } else if (prompt == "c") {
+        promptVal =
+          "Generate a good funny emojis for this image in brief use emojis if needed.";
+      } else {
+        promptVal =
+          "Generate a good creative hastags caption for this image in brief.";
+      }
+
       const response = await ollama.generate({
         model: "llava",
-        // prompt: "describe this image:",
-        // prompt: "define this image:",
-        prompt:
-          "Generate a good creative instagram caption for this image in brief use emojis or hastags if needed.",
-        // prompt: "Generate a good creative instagram caption",
-        // prompt: "Generate funny caption in one line only with emojis or hastags.",
+        prompt: promptVal,
         images: [test[1]],
         stream: false,
       });
@@ -158,6 +177,7 @@ function Homepage() {
     setUploadedImage("");
     setLoader(false);
     setSelectedOption("");
+    setPrompt("a");
     document.getElementById("formFileLg").value = "";
     router.refresh();
   };
@@ -165,9 +185,14 @@ function Homepage() {
   return (
     <>
       <div className="main_wrapper font-mono capitalize">
-        {/* {logo} */}
         <div className="logo_wrapper">
-          <img src="https://www.axelerant.com/hubfs/raw_assets/public/Axelerant_theme_2022/images/Axelerant-Logo-color.svg" />
+          {/* <img src="https://www.axelerant.com/hubfs/raw_assets/public/Axelerant_theme_2022/images/Axelerant-Logo-color.svg" /> */}
+          <Image
+            src={darklogo}
+            alt="Picture of the author"
+            width={200}
+            height={500}
+          />
         </div>
         <h1 className="mb-4 font-mono text-4xl font-extrabold leading-none tracking-tight  md:text-4xl lg:text-4xl text-white text-center mx-auto mt-1 uppercase">
           Generate Ai based captions
@@ -194,6 +219,24 @@ function Homepage() {
                 />
 
                 <br></br>
+                <label
+                  htmlFor="formFileLg"
+                  className="mb-2 inline-block text-neutral-200"
+                >
+                  Select prompt
+                </label>
+                <select
+                  className=" border   text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  value={prompt}
+                  onChange={handleSelectpromptChange}
+                >
+                  {/* Default option */}
+                  <option value="a">Generate Creative Caption</option>
+                  <option value="c">Generate Funny Caption</option>
+                  <option value="b">Describe This Image</option>
+                  {/* <option value="d">Generate hastags Caption</option> */}
+                </select>
+                <br />
                 <button
                   type="submit"
                   className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 capitalize"
